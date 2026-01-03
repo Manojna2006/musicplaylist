@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Stack Music Player</title>
+
+<style>
+body{
+    background:#0f172a;
+    color:white;
+    font-family:Segoe UI;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.player{
+    background:#020617;
+    width:360px;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 0 20px black;
+    text-align:center;
+}
+.controls button{
+    background:#22c55e;
+    border:none;
+    color:black;
+    font-size:20px;
+    margin:10px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    cursor:pointer;
+}
+.stack{
+    background:#020617;
+    margin-top:10px;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #334155;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="player">
+    <h2>🎵 Stack Music Player</h2>
+
+    <div class="controls">
+        <button onclick="back()">⏮</button>
+        <button onclick="play()">▶</button>
+        <button onclick="next()">⏭</button>
+    </div>
+
+    <p id="now">Press Play</p>
+
+    <audio id="audio" controls style="width:100%;"></audio>
+
+    <div class="stack">
+        <b>History Stack</b><br>
+        <span id="history"></span>
+    </div>
+
+    <div class="stack">
+        <b>Forward Stack</b><br>
+        <span id="forward"></span>
+    </div>
+</div>
+
+<script>
+let playlist = [
+    "songs/song1.mp3",
+    
+    "songs/song3.mp3"
+];
+
+let historyStack = [];
+let forwardStack = [];
+let currentIndex = 0;
+let audio = document.getElementById("audio");
+
+// Play
+function play(){
+    audio.src = playlist[currentIndex];
+    audio.play();
+    updateUI();
+}
+
+// Next song
+function next(){
+    if(currentIndex < playlist.length - 1){
+        historyStack.push(playlist[currentIndex]);
+        currentIndex++;
+        forwardStack = [];
+        audio.src = playlist[currentIndex];
+        audio.play();
+        updateUI();
+    }
+}
+
+// Previous song
+function back(){
+    if(historyStack.length > 0){
+        forwardStack.push(playlist[currentIndex]);
+        playlist[currentIndex] = historyStack.pop();
+        currentIndex = playlist.indexOf(playlist[currentIndex]);
+        audio.src = playlist[currentIndex];
+        audio.play();
+        updateUI();
+    }
+}
+
+// Auto play next when song ends
+audio.onended = function(){
+    next();
+};
+
+function updateUI(){
+    document.getElementById("now").innerText =
+        "Now Playing: " + playlist[currentIndex].split("/")[1];
+
+    document.getElementById("history").innerText =
+        historyStack.map(s => s.split("/")[1]).join(" → ");
+
+    document.getElementById("forward").innerText =
+        forwardStack.map(s => s.split("/")[1]).join(" → ");
+}
+</script>
+
+</body>
+</html>
